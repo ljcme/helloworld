@@ -1,4 +1,5 @@
 from flask import Flask
+from models.user import User
 
 # print a nice greeting.
 def say_hello(username = "World"):
