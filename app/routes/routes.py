@@ -11,7 +11,7 @@ from models.user import User
 @application.route('/home')
 @login_required
 def index():
-    return render_template('../views/index.html')
+    return render_template('index.html')
 
 
 @application.route('/login')
@@ -23,7 +23,7 @@ def login():
         Auth.AUTH_URI, access_type='offline'
     )
     session['oauth_state'] = state
-    return render_template('../views/login.html', auth_url=auth_url)
+    return render_template("login.html", auth_url=auth_url)
 
 
 def get_google_auth(state=None, token=None):

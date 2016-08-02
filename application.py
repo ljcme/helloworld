@@ -18,7 +18,7 @@ home_link = '<p><a href="/">Back</a></p>\n'
 footer_text = '</body>\n</html>'
 
 # EB looks for an 'application' callable by default.
-application = Flask(__name__)
+application = Flask(__name__, template_folder='app/views')
 application.config.from_object(config['dev'])
 
 # add a rule for the index page.
