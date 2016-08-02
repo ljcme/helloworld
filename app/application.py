@@ -1,9 +1,27 @@
 from flask import Flask
 from models.user import User
 
+
 # print a nice greeting.
 def say_hello(username = "World"):
     return '<p>Hello %s!</p>\n' % username
+
+def get_google_auth(state=None, token=None):
+    if token:
+        return OAuth2Session(Auth.CLIENT_ID, token=token)
+    if state:
+        return OAuth2Session(
+            Auth.CLIENT_ID,
+            state=state,
+            redirect_uri=Auth.REDIRECT_URI
+        )
+    oauth = OAuth2Session(
+        Auth.CLIENT_ID,
+        redirect_uri=Auth.REDIRECT_URI,
+        scope=Auth.SCOPE
+    )
+    return oauth
+
 
 # some bits of text for the page.
 header_text = '''
@@ -17,6 +35,30 @@ footer_text = '</body>\n</html>'
 
 # EB looks for an 'application' callable by default.
 application = Flask(__name__)
+application.config.from_object(config['dev'])
+db = SQLAlchemy(application)
+login_manager = LoginManager(application)
+login_manager.login_view = "login"
+login_manager.session_protection = "strong"
+
+
+@application.route('/')
+@login_required
+def index():
+    return render_template('index.html')
+
+@application.route('/login')
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    google = get_google_auth()
+    auth_url, state = google.authorization_url(
+        Auth.AUTH_URI, access_type='offline'
+    )
+    session['oauth_state'] = state
+    return render_template('login.html', auth_url=auth_url)
+
+@application
 
 # add a rule for the index page.
 application.add_url_rule('/', 'index', (lambda: header_text +
