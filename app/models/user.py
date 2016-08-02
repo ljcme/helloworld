@@ -1,4 +1,5 @@
-from flask_sqlalchemy import db
+from .. import db
+import datetime
 
 
 class User(db.Model):
