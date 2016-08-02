@@ -1,13 +1,18 @@
-from .. import application
-from .. import login_required, current_user
+import json
+from .. import application, db
+from .. import login_required, current_user, login_user, UserMixin
 from ..config import Auth
-from flask import render_template, redirect, session, url_for
+from flask import render_template, redirect, session, url_for, request
 from requests_oauthlib import OAuth2Session
+from requests.exceptions import HTTPError
+from models.user import User
 
-@application.route('/')
+
+@application.route('/home')
 @login_required
 def index():
-    return render_template('index.html')
+    return render_template('../views/index.html')
+
 
 @application.route('/login')
 def login():
@@ -18,7 +23,8 @@ def login():
         Auth.AUTH_URI, access_type='offline'
     )
     session['oauth_state'] = state
-    return render_template('login.html', auth_url=auth_url)
+    return render_template('../views/login.html', auth_url=auth_url)
+
 
 def get_google_auth(state=None, token=None):
     if token:
@@ -35,3 +41,45 @@ def get_google_auth(state=None, token=None):
         scope=Auth.SCOPE
     )
     return oauth
+
+
+@application.route('/oauth2callback')
+def callback():
+    # Redirect user to home page if already logged in.
+    if current_user is not None and current_user.is_authenticated:
+        return redirect(url_for('index'))
+    if 'error' in request.args:
+        if request.args.get('error') == 'access_denied':
+            return 'You denied access.'
+        return 'Error encountered.'
+    if 'code' not in request.args and 'state' not in request.args:
+        return redirect(url_for('login'))
+    else:
+        # Execution reaches here when user has
+        # successfully authenticated our app.
+        google = get_google_auth(state=session['oauth_state'])
+        try:
+            token = google.fetch_token(
+                Auth.TOKEN_URI,
+                client_secret=Auth.CLIENT_SECRET,
+                authorization_response=request.url)
+        except HTTPError:
+            return 'HTTPError occurred.'
+        google = get_google_auth(token=token)
+        resp = google.get(Auth.USER_INFO)
+        if resp.status_code == 200:
+            user_data = resp.json()
+            email = user_data['email']
+            user = User.query.filter_by(email=email).first()
+            if user is None:
+                user = User()
+                user.email = email
+            user.name = user_data['name']
+            print(token)
+            user.tokens = json.dumps(token)
+            user.avatar = user_data['picture']
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            return redirect(url_for('index'))
+        return 'Could not fetch your information.'
