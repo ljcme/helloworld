@@ -1,11 +1,11 @@
 import json
 from .. import application, db
-from .. import login_required, current_user, login_user, UserMixin
 from ..config import Auth
 from flask import render_template, redirect, session, url_for, request
+from flask_login import login_required, login_user, logout_user, current_user
 from requests_oauthlib import OAuth2Session
 from requests.exceptions import HTTPError
-from models.user import User
+from ..models.user import User
 
 
 @application.route('/home')
@@ -83,3 +83,10 @@ def callback():
             login_user(user)
             return redirect(url_for('index'))
         return 'Could not fetch your information.'
+
+
+@application.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
