@@ -1,6 +1,4 @@
-from flask import Flask
-from app.config import config
-
+from app import application, db
 
 # print a nice greeting.
 def say_hello(username = "World"):
@@ -17,10 +15,7 @@ instructions = '''
 home_link = '<p><a href="/">Back</a></p>\n'
 footer_text = '</body>\n</html>'
 
-# EB looks for an 'application' callable by default.
-application = Flask(__name__, template_folder='app/views')
-application.config.from_object(config['dev'])
-
+'''
 # add a rule for the index page.
 application.add_url_rule('/', 'index', (lambda: header_text +
     say_hello() + instructions + footer_text))
@@ -29,10 +24,12 @@ application.add_url_rule('/', 'index', (lambda: header_text +
 # URL.
 application.add_url_rule('/<username>', 'hello', (lambda username:
     header_text + say_hello(username) + home_link + footer_text))
+'''
 
 # run the app.
 if __name__ == "__main__":
     # Setting debug to True enables debug output. This line should be
     # removed before deploying a production app.
+    db.create_all()
     application.debug = True
     application.run()

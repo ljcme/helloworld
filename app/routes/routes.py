@@ -1,5 +1,5 @@
 import json
-from .. import application, db
+from app import application, db, login_manager
 from ..config import Auth
 from flask import render_template, redirect, session, url_for, request
 from flask_login import login_required, login_user, logout_user, current_user
@@ -8,7 +8,7 @@ from requests.exceptions import HTTPError
 from ..models.user import User
 
 
-@application.route('/home')
+@application.route('/')
 @login_required
 def index():
     return render_template('index.html')
@@ -41,6 +41,11 @@ def get_google_auth(state=None, token=None):
         scope=Auth.SCOPE
     )
     return oauth
+
+
+@login_manager.user_loader
+def user_load(user_id):
+    return User.query.get(int(user_id))
 
 
 @application.route('/oauth2callback')
