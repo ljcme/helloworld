@@ -8,7 +8,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Auth:
     CLIENT_ID = '460082845174-bcfb6rgd5usnbhma8euofjfp344jabfm.apps.googleusercontent.com'
     CLIENT_SECRET = 'V0oQX_VGdaqadeDu6-eykM4H'
-    REDIRECT_URI = 'https://127.0.0.1:5000/oauth2callback'
+    REDIRECT_URI = '/oauth2callback'
     AUTH_URI = 'https://accounts.google.com/o/oauth2/auth'
     TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'
     USER_INFO = 'https://www.googleapis.com/userinfo/v2/me'
