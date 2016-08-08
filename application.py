@@ -32,4 +32,4 @@ if __name__ == "__main__":
     # removed before deploying a production app.
     db.create_all()
     application.debug = True
-    application.run()
+    application.run(ssl_context=('./ssl.crt', './ssl.key'))
