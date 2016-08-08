@@ -1,8 +1,6 @@
 import os
 
-
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 
 
 class Auth:
@@ -13,13 +11,6 @@ class Auth:
     TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'
     USER_INFO = 'https://www.googleapis.com/userinfo/v2/me'
     SCOPE = ['profile', 'email']
-
-
-class ET_Auth:
-    FUELSDK_CLIENT_ID = '0b1evzoz7mqnoavzdy08kh34'
-    FUELSDK_CLIENT_SECRET = 'xnvEvk5XoZKITDIfcSZTZ593'
-    FUELSDK_DEFAULT_WSDL = 'https://webservice.exacttarget.com/etframework.wsdl'
-    FUELSDK_AUTH_URL = 'https://auth.exacttargetapis.com/v1/requestToken?legacy=1'
 
 
 class Config:
