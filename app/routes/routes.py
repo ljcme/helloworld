@@ -6,12 +6,13 @@ from flask_login import login_required, login_user, logout_user, current_user
 from requests_oauthlib import OAuth2Session
 from requests.exceptions import HTTPError
 from ..models.user import User
-
+from FuelSDK.objects import ET_ContentArea
+from .. import et_client
 
 @application.route('/')
 @login_required
 def index():
-    return render_template('index.html')
+    return render_template('emailcreation.html')
 
 
 @application.route('/login')
@@ -95,3 +96,12 @@ def callback():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@application.route('/createContent')
+def createcontent():
+    mycontentarea = ET_ContentArea()
+    mycontentarea.auth_stub = et_client
+    mycontentarea.props = {"CustomerKey": "WebAppTest", "Name": "WebAppTest", "Content": "<b>Some HTML Content</b>"}
+    mycontentarea.post()
+    return 'success!'
